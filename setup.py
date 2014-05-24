@@ -1,9 +1,10 @@
 from distutils.core import setup
+from spreedly import __version__
 
 
 setup(
     name='spreedly-sdk',
-    version='0.1',
+    version=__version__,
     author='calvin',
     author_email='dani.pyc@gmail.com',
     packages=['spreedly'],
