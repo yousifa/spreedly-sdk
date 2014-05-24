@@ -15,8 +15,6 @@
 # under the License.
 
 __version__ = '0.1'
-__author__ = 'calvin'
-__license__ = 'Apache Software License'
 
 import requests
 import xmltodict
@@ -54,11 +52,10 @@ class Client(object):
     user_agent = 'SpreedlySdk/rest-sdk-spreedly 0.1'
 
     def __init__(self, environment_key, access_secret,
-                 gateway_token=None, version='1', format_type='xml'):
+                 version='1', format_type='xml'):
 
         self.environment_key = environment_key
         self.access_secret = access_secret
-        self.gateway_token = gateway_token
         self.version = version
         self.format_type = format_type
 
@@ -83,6 +80,12 @@ class Client(object):
             elif item_type == 'datetime':
                 data = datetime.strptime(
                     data['#text'], "%Y-%m-%dT%H:%M:%SZ")
+
+            elif item_type == 'integer':
+                data = int(data['#text'])
+
+            elif data.get('@nil'):
+                data = None
 
         return key, data
 
@@ -168,9 +171,11 @@ class Client(object):
         data = lb.E.gateway(lb.E.login(login), lb.E.password(password))
         return self.put("gateways/{}".format(gateway_token), data=data)
 
+    @_nested('transaction')
     def retain(self, gateway_token):
         return self.put("gateways/{}/retain".format(gateway_token))
 
+    @_nested('transaction')
     def redact(self, gateway_token):
         return self.put("gateways/{}/redact".format(gateway_token))
 
@@ -184,8 +189,9 @@ class Client(object):
         return self.since('payment_methods', since_token)
 
     @_nested('transaction')
-    def purchase(self, amount, currency_code, payment_method_token,
-                 retain_on_success=False, payment_type='purchase'):
+    def purchase(
+        self, amount, currency_code, payment_method_token, gateway_token,
+            retain_on_success=False, payment_type='purchase'):
 
         data = lb.E.transaction(
             lb.E.amount(str(amount)),
@@ -193,10 +199,10 @@ class Client(object):
             lb.E.payment_method_token(payment_method_token))
 
         if retain_on_success:
-            data.getchildren().append(lb.E.retain_on_success('true'))
+            etree.SubElement(data, 'retain_on_success').text = 'true'
 
         return self.post("gateways/{}/{}".format(
-            self.gateway_token, payment_type), data=data)
+            gateway_token, payment_type), data=data)
 
     @_nested('transaction')
     def reference(self, amount, currency_code, transaction_token):
@@ -207,11 +213,11 @@ class Client(object):
         return self.post("transactions/{}/purchase".format(
             transaction_token), data=data)
 
-    def authorize(self, amount, currency_code, payment_method_token):
-        return self.purchase(
-            amount=amount, currency_code=currency_code,
-            payment_method_token=payment_method_token,
-            payment_type='authorize')
+    def authorize(self, amount, currency_code,
+                  payment_method_token, gateway_token):
+
+        return self.purchase(amount, currency_code, payment_method_token,
+                             gateway_token, payment_type='authorize')
 
     @_nested('transaction')
     def capture(self, transaction_token):

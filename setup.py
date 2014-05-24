@@ -1,4 +1,4 @@
-from distutils.core import setup
+from setuptools import setup
 from spreedly import __version__
 
 
@@ -9,11 +9,12 @@ setup(
     author_email='dani.pyc@gmail.com',
     packages=['spreedly'],
     scripts=[],
+    test_suite='tests',
+    zip_safe=False,
     url='https://github.com/calvinpy',
     license='Apache Software License',
-    description='The spreedly SDK provides Python APIs to create,'
-        'process and manage transactions',
-    install_requires=['requests', 'lxml', 'xmltodict'],
+    description='Python Interface to the Spreedly API',
+    install_requires=['requests>=1.1.0', 'lxml', 'xmltodict'],
     dependency_links=[
         'https://github.com/kennethreitz/requests',
         'https://github.com/lxml/lxml/',
@@ -28,5 +29,5 @@ setup(
         'Topic :: Software Development :: Libraries :: Application Frameworks',
         'Topic :: Internet :: WWW/HTTP :: Dynamic Content',
     ],
-    keywords="spreedly sdk",
+    keywords='python spreedly rest sdk',
 )
