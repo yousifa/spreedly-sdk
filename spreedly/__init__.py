@@ -1,10 +1,10 @@
-import json
 import requests
 import xmltodict
 import lxml.builder as lb
 
 from lxml import etree
 from xml.parsers.expat import ExpatError
+from datetime import datetime
 
 
 __version__ = '0.1'
@@ -24,7 +24,7 @@ class SpreedlyError(Exception):
         self.message = message
 
     def json(self):
-        return xmltodict.parse(self.response.text)
+        return xmltodict.parse(self.response.text, dict_constructor=dict)
 
 
 class Client(object):
@@ -58,6 +58,19 @@ class Client(object):
             'Content-Type': 'application/' + self.format_type
         }
 
+    def _postprocessor(self, item, key, data):
+        if isinstance(data, dict):
+            item_type = data.get('@type')
+
+            if item_type == 'boolean':
+                data = data['#text'] == 'true'
+
+            elif item_type == 'datetime':
+                data = datetime.strptime(
+                    data['#text'], "%Y-%m-%dT%H:%M:%SZ")
+
+        return key, data
+
     def request(self, url, method, data=None, headers=None, **kwargs):
         http_headers = self.headers
         http_headers.update(headers or {})
@@ -79,8 +92,10 @@ class Client(object):
             raise SpreedlyError('Unprocessable', response)
 
         try:
-            data = json.loads(
-                json.dumps(xmltodict.parse(response.text)))
+            data = xmltodict.parse(
+                response.text, postprocessor=self._postprocessor,
+                dict_constructor=dict)
+
         except ExpatError:
             raise SpreedlyError('XML parse error', response)
 
@@ -120,6 +135,10 @@ class Client(object):
     @_nested('gateway')
     def gateway(self, gateway_type='test', **kwargs):
         data = lb.E.gateway(lb.E.gateway_type(gateway_type))
+
+        for param, value in kwargs.iteritems():
+            etree.SubElement(data, param).text = value
+
         return self.post('gateways', data=data)
 
     @_nested('gateway')
