@@ -37,7 +37,7 @@ client = spreedly.Client(ENVIRONMENT_KEY, ACCESS_SECRET)
 client.gateway()
 ```
 
-```
+```python
 {
   'characteristics': {
     'supports_3dsecure_authorize': True,
@@ -182,7 +182,7 @@ transaction_token = '8qge2CZBikhXr44c6vi1tqvjFVw'
 client.reference(100, 'EUR', payment_method_token, transaction_token)
 ```
 
-```
+```python
 {
   'amount': 100,
   'api_urls': None,
