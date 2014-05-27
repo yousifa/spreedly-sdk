@@ -37,7 +37,7 @@ class SpreedlyError(Exception):
         self.message = message
 
     def json(self):
-        return xmltodict.parse(self.response.text, dict_constructor=dict)
+        return Client.parse_xml(self.response)
 
 
 class Client(object):
@@ -70,7 +70,8 @@ class Client(object):
             'Content-Type': 'application/' + self.format_type
         }
 
-    def _postprocessor(self, item, key, data):
+    @classmethod
+    def _postprocessor(cls, item, key, data):
         if isinstance(data, dict):
             item_type = data.get('@type')
 
@@ -91,6 +92,12 @@ class Client(object):
                 data = None
 
         return key, data
+
+    @classmethod
+    def parse_xml(cls, response):
+        return xmltodict.parse(
+            response.text, postprocessor=cls._postprocessor,
+            dict_constructor=dict)
 
     def request(self, url, method, data=None, headers=None, **kwargs):
         http_headers = self.headers
@@ -113,10 +120,7 @@ class Client(object):
             raise SpreedlyError('Unprocessable', response)
 
         try:
-            data = xmltodict.parse(
-                response.text, postprocessor=self._postprocessor,
-                dict_constructor=dict)
-
+            data = Client.parse_xml(response)
         except ExpatError:
             raise SpreedlyError('XML parse error', response)
 
