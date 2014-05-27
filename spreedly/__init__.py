@@ -84,6 +84,9 @@ class Client(object):
             elif item_type == 'integer':
                 data = int(data['#text'])
 
+            elif data.get('@key'):
+                data = {data['@key']: data['#text']}
+
             elif data.get('@nil'):
                 data = None
 
