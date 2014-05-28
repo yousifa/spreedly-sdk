@@ -32,7 +32,10 @@ client = spreedly.Client(ENVIRONMENT_KEY, ACCESS_SECRET)
 
 ### Gateways
 
-#### Add Payment Gateway
+To use Spreedly Core you have to have at least one gateway. 
+You can create a test gateway, by default . 
+
+#### Payment Gateway
 ```python
 client.gateway()
 ```
@@ -75,12 +78,15 @@ client.gateway()
 }
 ```
 
+Each gateway type has a different set of credentials needed to communicate with it and are only available in some countries.
+
 [Supported gateways](https://spreedly.com/gateways)
+
 ```python
-client.gateway(gateway_type, **data)
+client.gateway(gateway_type, **credential_data)
 ```
 
-#### Retrieve gateways
+#### Retrieve gateway
 
 ```python
 gateway_token = 'U2JKWnRYIsNKWfta9kITRUbci0j'
@@ -92,16 +98,29 @@ client.get_gateway_list()
 client.get_gateway_list(since_token=gateway_token)
 ```
 
-#### Gateway operations
+#### Update gateway
+
+If you create a gateway using a normal authenticated add gateway api call, the gateway is automatically retained.
+
+If a gateway is created using an unauthenticated channel such as client-side scripting, it is kept in a cached state until it is retained or automatically redacted. This allows your customers to create gateways using their own credentials, but until you retain it, it cannot be used and you will not be billed for it.
 
 ```python
 client.retain(gateway_token)
+```
+
+Gateways can't be deleted (since they're permanently associated with any transactions run against them), but the sensitive credential information in them can be redacted so that they're inactive:
+
+
+```python
 client.redact(gateway_token)
 ```
 
 ### Payments
 
-#### Add Purchase
+#### Purchase
+
+A purchase call immediately takes funds from the payment method (assuming the transaction succeeds).
+
 ```python
 payment_method_token = 'CwhkxFxm5nzn3cts4t7TzasgWBl'
 client.purchase(100, 'EUR', payment_method_token, gateway_token)
@@ -177,6 +196,17 @@ client.purchase(100, 'EUR', payment_method_token, gateway_token)
 }
 ```
 
+If the purchase or authorize is successful, you may then want to retain the payment method. Passing the retain_on_success parameter to the purchase or authorize call can save you from having to make another API call to do the retain. If the purchase or authorize succeeds, then the payment method is retained for you.
+
+```python
+client.purchase(100, 'EUR', payment_method_token, gateway_token, retain_on_success=True)
+```
+
+#### Purchase using a reference transaction
+
+
+Some gateways require some of their customers to submit a CVV value for all of their transactions. If you're one of the very few customers who can't seem to convince your gateway to remove the CVV requirement, reference transactions may help. And in some cases, using reference transactions can lower decline rates.
+
 ```python
 transaction_token = '8qge2CZBikhXr44c6vi1tqvjFVw'
 client.reference(100, 'EUR', payment_method_token, transaction_token)
@@ -225,11 +255,12 @@ client.reference(100, 'EUR', payment_method_token, transaction_token)
 }
 ```
 
-```python
-client.purchase(100, 'EUR', payment_method_token, gateway_token, retain_on_success=True)
-```
 
-#### Add Authorization
+
+#### Authorization
+
+An authorize works just like a purchase; the difference being that it doesn't actually take the funds. NOTE: authorize will hold funds on some payment methods, notably debit cards.
+
 ```python
 client.authorize(100, 'EUR', payment_method_token, gateway_token)
 ```
@@ -240,39 +271,52 @@ client.authorize(100, 'EUR', payment_method_token, gateway_token)
   'transaction_type': 'Authorization'
   ...
 }
+
+
 ```
-#### Payment operations
+#### Update payment
+A capture will actually take the funds previously reserved via an authorization.
+
 ```python
 client.capture(transaction_token)
 ```
+
+Void is used to cancel out authorizations and, with some gateways, to cancel actual payment transactions within the first 24 hours (credits are used after that; see below).
 
 ```python
 client.void(transaction_token)
 ```
 
-```python
-client.credit(transaction_token)
-```
+A credit is like a void, except it actually reverses a charge instead of just canceling a charge that hasn't yet been made. It's a refund.
 
 ```python
 client.credit(transaction_token)
 ```
+
 
 #### Retrieve transactions
+
+A particular transaction.
 
 ```python
 client.get_transaction(transaction_token)
 ```
+
+The details of the transactions for your account.
 
 ```python
 client.get_transaction_list()
 client.get_transaction_list(since_token=transaction_token)
 ```
 
+The details of the transactions for a payment method.
+
 ```python
 client.get_payment_method_transaction_list(payment_method_token)
 client.get_payment_method_transaction_list(payment_method_token, since_token=transaction_token)
 ```
+
+The details of the transactions for a gateway.
 
 ```python
 client.get_gateway_transaction_list(gateway_token)
