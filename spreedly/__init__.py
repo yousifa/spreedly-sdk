@@ -39,6 +39,10 @@ class SpreedlyError(Exception):
     def json(self):
         return Client.parse_xml(self.response)
 
+    @property
+    def is_formatted_error(self):
+        return 'errors' in self.json()
+
 
 class Client(object):
 
