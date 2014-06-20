@@ -224,11 +224,13 @@ class Client(object):
         return self.post("transactions/{}/purchase".format(
             transaction_token), data=data)
 
-    def authorize(self, amount, currency_code,
-                  payment_method_token, gateway_token):
+    def authorize(
+        self, amount, currency_code, payment_method_token,
+            gateway_token, retain_on_success=False):
 
-        return self.purchase(amount, currency_code, payment_method_token,
-                             gateway_token, payment_type='authorize')
+        return self.purchase(
+            amount, currency_code, payment_method_token,
+            gateway_token, retain_on_success, payment_type='authorize')
 
     @_nested('transaction')
     def capture(self, transaction_token):
