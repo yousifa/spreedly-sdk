@@ -1,13 +1,13 @@
 from setuptools import setup
-from spreedly import __version__
+from spreedly_sdk import __version__
 
 
 setup(
     name='spreedly-sdk',
     version=__version__,
     author='calvin',
-    author_email='dani.pyc@gmail.com',
-    packages=['spreedly'],
+    author_email='dani@aplaza.me',
+    packages=['spreedly_sdk'],
     scripts=[],
     test_suite='tests',
     zip_safe=False,
