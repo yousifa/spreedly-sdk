@@ -82,7 +82,7 @@ class Client(object):
             if item_type == 'boolean':
                 data = data['#text'] == 'true'
 
-            elif item_type == 'datetime':
+            elif item_type in ('datetime', 'dateTime'):
                 data = datetime.strptime(
                     data['#text'], "%Y-%m-%dT%H:%M:%SZ")
 
