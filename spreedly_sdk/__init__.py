@@ -18,11 +18,11 @@ __version__ = '0.1.0'
 
 import requests
 import xmltodict
+import dateutil.parser
 import lxml.builder as lb
 
 from lxml import etree
 from xml.parsers.expat import ExpatError
-from datetime import datetime
 
 
 class SpreedlyError(Exception):
@@ -82,9 +82,8 @@ class Client(object):
             if item_type == 'boolean':
                 data = data['#text'] == 'true'
 
-            elif item_type in ('datetime', 'dateTime'):
-                data = datetime.strptime(
-                    data['#text'], "%Y-%m-%dT%H:%M:%SZ")
+            elif item_type in ('dateTime', 'datetime'):
+                data = dateutil.parser.parse(data['#text'])
 
             elif item_type == 'integer':
                 data = int(data['#text'])
