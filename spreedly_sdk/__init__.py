@@ -198,6 +198,10 @@ class Client(object):
         """ API Issue: Empty list """
         return self.since('payment_methods', since_token)
 
+    @_nested('payment_method')
+    def retain_payment_method(self, payment_method):
+        return self.put("payment_methods/{}/retain".format(payment_method))
+
     @_nested('transaction')
     def purchase(
         self, amount, currency_code, payment_method_token, gateway_token,
