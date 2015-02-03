@@ -203,9 +203,21 @@ class Client(object):
         return self.put("payment_methods/{}/retain".format(payment_method))
 
     @_nested('transaction')
+    def verify(
+            self, gateway_token, payment_method_token, retain_on_success=True):
+
+        data = lb.E.transaction(
+            lb.E.payment_method_token(payment_method_token))
+
+        if retain_on_success:
+            etree.SubElement(data, 'retain_on_success').text = 'true'
+
+        return self.post("gateways/{}/verify".format(gateway_token), data=data)
+
+    @_nested('transaction')
     def purchase(
         self, amount, currency_code, payment_method_token, gateway_token,
-            retain_on_success=False, payment_type='purchase'):
+            retain_on_success=True, payment_type='purchase'):
 
         data = lb.E.transaction(
             lb.E.amount(str(amount)),
@@ -229,7 +241,7 @@ class Client(object):
 
     def authorize(
         self, amount, currency_code, payment_method_token,
-            gateway_token, retain_on_success=False):
+            gateway_token, retain_on_success=True):
 
         return self.purchase(
             amount, currency_code, payment_method_token,
