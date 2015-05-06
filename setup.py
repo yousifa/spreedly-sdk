@@ -1,10 +1,8 @@
 from setuptools import setup
-from spreedly_sdk import __version__
-
 
 setup(
     name='spreedly-sdk',
-    version=__version__,
+    version='0.1.0',
     author='calvin',
     author_email='dani@aplaza.me',
     packages=['spreedly_sdk'],
