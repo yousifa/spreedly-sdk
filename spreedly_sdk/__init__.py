@@ -256,8 +256,13 @@ class Client(object):
         return self.post("transactions/{}/void".format(transaction_token))
 
     @_nested('transaction')
-    def credit(self, transaction_token):
-        return self.post("transactions/{}/credit".format(transaction_token))
+    def credit(self, transaction_token, amount=None):
+        if amount is not None:
+            data = lb.E.transaction(lb.E.amount(str(amount)))
+        else:
+            data = None
+        return self.post("transactions/{}/credit".format(
+            transaction_token), data=data)
 
     @_nested('transaction')
     def get_transaction(self, transaction_token):
