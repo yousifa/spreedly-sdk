@@ -102,6 +102,25 @@ class Client(object):
             response.text, postprocessor=cls._postprocessor,
             dict_constructor=dict)
 
+    @classmethod
+    def _dict_to_xml(cls, d, name='data'):
+        def buildxml(r, d):
+            if isinstance(d, dict):
+                for k, v in d.iteritems():
+                    s = etree.SubElement(r, k)
+                    buildxml(s, v)
+            elif isinstance(d, tuple) or isinstance(d, list):
+                for v in d:
+                    s = etree.SubElement(r, 'i')
+                    buildxml(s, v)
+            elif isinstance(d, basestring):
+                r.text = d
+            else:
+                r.text = str(d)
+            return r
+        r = etree.Element(name)
+        return buildxml(r, d)
+
     def request(self, url, method, data=None, headers=None, **kwargs):
         http_headers = self.headers
         http_headers.update(headers or {})
@@ -217,7 +236,7 @@ class Client(object):
     @_nested('transaction')
     def purchase(
         self, amount, currency_code, payment_method_token, gateway_token,
-            retain_on_success=True, payment_type='purchase'):
+            retain_on_success=True, payment_type='purchase', gateway_specific_fields=None):
 
         data = lb.E.transaction(
             lb.E.amount(str(amount)),
@@ -226,6 +245,10 @@ class Client(object):
 
         if retain_on_success:
             etree.SubElement(data, 'retain_on_success').text = 'true'
+
+        if gateway_specific_fields:
+            item_specific_fields = self._dict_to_xml(gateway_specific_fields, 'gateway_specific_fields')
+            data.append(item_specific_fields)
 
         return self.post("gateways/{}/{}".format(
             gateway_token, payment_type), data=data)
