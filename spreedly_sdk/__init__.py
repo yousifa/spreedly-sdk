@@ -264,11 +264,11 @@ class Client(object):
 
     def authorize(
         self, amount, currency_code, payment_method_token,
-            gateway_token, retain_on_success=True):
+            gateway_token, retain_on_success=True, **kwargs):
 
         return self.purchase(
             amount, currency_code, payment_method_token,
-            gateway_token, retain_on_success, payment_type='authorize')
+            gateway_token, retain_on_success, payment_type='authorize', **kwargs)
 
     @_nested('transaction')
     def capture(self, transaction_token):
