@@ -16,7 +16,9 @@
 
 import os
 import unittest
-import spreedly
+import mock
+import spreedly_sdk as spreedly
+from lxml import etree
 
 
 class SpreedlySdkTest(unittest.TestCase):
@@ -81,6 +83,21 @@ class SpreedlySdkTest(unittest.TestCase):
         self.assertEqual(
             response['payment_method']['token'], self.payment_method_token)
 
+    def test_purchase_with_extra_gateway_parameters(self):
+        amount = 100
+        currency_code = 'EUR'
+
+        with mock.patch('spreedly_sdk.Client.post') as post_method:
+            self.client.purchase(
+                amount, currency_code,
+                self.payment_method_token, self.gateway_token,
+                gateway_specific_fields={'openpay': {'device_session_id': '1232132sasdas'}})
+            data = post_method.call_args[1]['data']
+            self.assertIn(
+                '<gateway_specific_fields><openpay><device_session_id>1232132sasdas</device_session_id></openpay></gateway_specific_fields>',
+                etree.tostring(data)
+            )
+
     def test_get_payment_method(self):
         response = self.client.get_payment_method(self.payment_method_token)
         self.assertEqual(response['token'], self.payment_method_token)
@@ -98,6 +115,7 @@ class SpreedlySdkTest(unittest.TestCase):
     def test_get_gateway_transaction_list(self):
         response = self.client.get_gateway_transaction_list(self.gateway_token)
         self.assertIsNot(len(response), 0)
+
 
 if __name__ == '__main__':
     unittest.main()
