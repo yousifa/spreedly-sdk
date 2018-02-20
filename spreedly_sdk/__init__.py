@@ -305,3 +305,7 @@ class Client(object):
     def get_gateway_transaction_list(self, gateway_token, since_token=None):
         action = "gateways/{}/transactions".format(gateway_token)
         return self.since(action, since_token)
+
+    @_nested('transaction')
+    def redact_payment_method(self, transaction_token):
+        return self.put("payment_methods/{}/redact".format(transaction_token))
