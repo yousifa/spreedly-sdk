@@ -307,5 +307,9 @@ class Client(object):
         return self.since(action, since_token)
 
     @_nested('transaction')
-    def redact_payment_method(self, transaction_token):
-        return self.put("payment_methods/{}/redact".format(transaction_token))
+    def redact_payment_method(self, transaction_token, gateway_token=None):
+        if gateway_token:
+            data = lb.E.transaction(lb.E.remove_from_gateway(gateway_token))
+        else:
+            data = None
+        return self.put("payment_methods/{}/redact".format(transaction_token), data)
