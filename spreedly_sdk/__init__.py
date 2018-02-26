@@ -14,7 +14,7 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
-__version__ = '0.1.1'
+__version__ = '0.1.2'
 
 import requests
 import xmltodict
@@ -305,3 +305,11 @@ class Client(object):
     def get_gateway_transaction_list(self, gateway_token, since_token=None):
         action = "gateways/{}/transactions".format(gateway_token)
         return self.since(action, since_token)
+
+    @_nested('transaction')
+    def redact_payment_method(self, transaction_token, gateway_token=None):
+        if gateway_token:
+            data = lb.E.transaction(lb.E.remove_from_gateway(gateway_token))
+        else:
+            data = None
+        return self.put("payment_methods/{}/redact".format(transaction_token), data)
