@@ -11,7 +11,7 @@ setup(
     test_require=['mock'],
     zip_safe=False,
     url='https://github.com/calvinpy',
-    license='Apache Software License',
+    license='BSD 3-clause "New" or "Revised License"',
     description='Python Interface to the Spreedly API',
     install_requires=['requests>=1.1.0', 'lxml', 'xmltodict', 'python-dateutil'],
     dependency_links=[
@@ -22,7 +22,7 @@ setup(
         'Programming Language :: Python',
         'Natural Language :: English',
         'Intended Audience :: Developers',
-        'License :: OSI Approved :: Apache Software License',
+        'License :: OSI Approved :: BSD License',
         'Operating System :: OS Independent',
         'Topic :: Software Development :: Libraries :: Python Modules',
         'Topic :: Software Development :: Libraries :: Application Frameworks',
