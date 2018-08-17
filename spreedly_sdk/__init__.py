@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-
+from functools import reduce
 
 __version__ = '0.1.2'
 
@@ -93,14 +93,14 @@ class Client(object):
     def _dict_to_xml(cls, d, name='data'):
         def buildxml(r, d):
             if isinstance(d, dict):
-                for k, v in d.iteritems():
+                for k, v in d.items():
                     s = etree.SubElement(r, k)
                     buildxml(s, v)
             elif isinstance(d, tuple) or isinstance(d, list):
                 for v in d:
                     s = etree.SubElement(r, 'i')
                     buildxml(s, v)
-            elif isinstance(d, basestring):
+            elif isinstance(d, str):
                 r.text = d
             else:
                 r.text = str(d)
@@ -170,7 +170,7 @@ class Client(object):
     def gateway(self, gateway_type='test', **kwargs):
         data = lb.E.gateway(lb.E.gateway_type(gateway_type))
 
-        for param, value in kwargs.iteritems():
+        for param, value in kwargs.items():
             etree.SubElement(data, param).text = value
 
         return self.post('gateways', data=data)
