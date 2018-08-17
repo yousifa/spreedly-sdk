@@ -8,7 +8,7 @@ setup(
     packages=['spreedly_sdk'],
     scripts=[],
     test_suite='tests',
-    test_require=['mock'],
+    tests_require=['mock'],
     zip_safe=False,
     url='https://github.com/calvinpy',
     license='BSD 3-clause "New" or "Revised License"',
