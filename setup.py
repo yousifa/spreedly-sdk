@@ -29,4 +29,5 @@ setup(
         'Topic :: Internet :: WWW/HTTP :: Dynamic Content',
     ],
     keywords='python spreedly rest sdk',
+    python_requires='>=3',
 )
