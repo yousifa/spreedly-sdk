@@ -8,7 +8,7 @@ setup(
     packages=['spreedly_sdk'],
     scripts=[],
     test_suite='tests',
-    tests_require=['mock'],
+    tests_require=[],
     zip_safe=False,
     url='https://github.com/calvinpy',
     license='BSD 3-clause "New" or "Revised License"',
@@ -29,4 +29,5 @@ setup(
         'Topic :: Internet :: WWW/HTTP :: Dynamic Content',
     ],
     keywords='python spreedly rest sdk',
+    python_requires='>=3',
 )

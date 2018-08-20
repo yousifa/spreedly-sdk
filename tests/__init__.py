@@ -1,13 +1,12 @@
 #!/usr/bin/env python
 
 import os
-import unittest
-import mock
+from unittest import main, mock, TestCase
 import spreedly_sdk as spreedly
 from lxml import etree
 
 
-class SpreedlySdkTest(unittest.TestCase):
+class SpreedlySdkTest(TestCase):
 
     def setUp(self):
 
@@ -80,7 +79,7 @@ class SpreedlySdkTest(unittest.TestCase):
                 gateway_specific_fields={'openpay': {'device_session_id': '1232132sasdas'}})
             data = post_method.call_args[1]['data']
             self.assertIn(
-                '<gateway_specific_fields><openpay><device_session_id>1232132sasdas</device_session_id></openpay></gateway_specific_fields>',
+                '<gateway_specific_fields><openpay><device_session_id>1232132sasdas</device_session_id></openpay></gateway_specific_fields>'.encode(),
                 etree.tostring(data)
             )
 
@@ -104,4 +103,4 @@ class SpreedlySdkTest(unittest.TestCase):
 
 
 if __name__ == '__main__':
-    unittest.main()
+    main()
