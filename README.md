@@ -141,6 +141,25 @@ if tokenized_card["transaction"]["succeeded"] is True:
     payment_method_token = tokenized_card["transaction"]["payment_method"]["token"]
 ```
 
+##### Tokenize Bank Account
+
+A bank account can be tokenized for future transactions.
+```python
+# Tokenize bank info
+tokenized_bank = client.tokenize_bank(
+        first_name="Homer",
+        last_name="Simpson",
+        bank_routing_number="021000021",
+        bank_account_number="9876543210",
+        retained=True
+    )
+    
+# Get payment token if transaction is successful
+payment_method_token = ''
+if tokenized_bank["transaction"]["succeeded"] is True:
+    payment_method_token = tokenized_bank["transaction"]["payment_method"]["token"]
+```
+
 #### Purchase
 
 A purchase call immediately takes funds from the payment method (assuming the transaction succeeds).

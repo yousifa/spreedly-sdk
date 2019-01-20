@@ -224,6 +224,24 @@ class Client(object):
 
         return self.post("payment_methods", data=data)
 
+    def tokenize_bank(
+            self, first_name, last_name, bank_routing_number, bank_account_number, retained=True):
+        data = (
+            lb.E.payment_method(
+                lb.E.bank_account(
+                    lb.E.first_name(first_name),
+                    lb.E.last_name(last_name),
+                    lb.E.bank_routing_number(bank_routing_number),
+                    lb.E.bank_account_number(bank_account_number)
+                ),
+            )
+        )
+
+        if retained:
+            etree.SubElement(data, 'retained').text = 'true'
+
+        return self.post("payment_methods", data=data)
+
     @_nested('payment_methods', 'payment_method')
     def get_payment_method_list(self, since_token=None):
         """ API Issue: Empty list """
