@@ -10,7 +10,7 @@ setup(
     test_suite='tests',
     tests_require=[],
     zip_safe=False,
-    url='https://github.com/calvinpy',
+    url='https://github.com/aplazame',
     license='BSD 3-clause "New" or "Revised License"',
     description='Python Interface to the Spreedly API',
     install_requires=['requests>=1.1.0', 'lxml', 'xmltodict', 'python-dateutil'],

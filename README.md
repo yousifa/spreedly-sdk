@@ -4,13 +4,13 @@ This library provides a pure Python interface to the Spreedly REST APIs.
 The easiest way to install the latest version
 is by using pip/easy_install to pull it from Github:
 
-    $ pip install git+https://github.com/calvinpy/spreedly-sdk
-    $ easy_install git+https://github.com/calvinpy/spreedly-sdk
+    $ pip install git+https://github.com/aplazame/spreedly-sdk
+    $ easy_install git+https://github.com/aplazame/spreedly-sdk
 
 You may also use Git to clone the repository from
 Github and install it manually:
 
-    $ git clone https://github.com/calvinpy/spreedly-sdk
+    $ git clone https://github.com/aplazame/spreedly-sdk
     $ python setup.py install
 
 ## Documentation
@@ -25,7 +25,7 @@ Github and install it manually:
 ## Basic usage
 ### Client
 ```python
-import spreedly
+import spreedly_sdk as spreedly
 
 client = spreedly.Client(ENVIRONMENT_KEY, ACCESS_SECRET)
 ```
