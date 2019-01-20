@@ -199,6 +199,31 @@ class Client(object):
     def get_payment_method(self, payment_method):
         return self.get("payment_methods/{}".format(payment_method))
 
+    def tokenize_credit_card(
+            self, first_name, last_name, number, verification_value, month, year, email, retained=True,
+            eligible_for_card_updater=False):
+        data = (
+            lb.E.payment_method(
+                lb.E.credit_card(
+                    lb.E.first_name(first_name),
+                    lb.E.last_name(last_name),
+                    lb.E.number(number),
+                    lb.E.verification_value(verification_value),
+                    lb.E.month(month),
+                    lb.E.year(year)
+                ),
+                lb.E.email(email)
+            )
+        )
+
+        if retained:
+            etree.SubElement(data, 'retained').text = 'true'
+
+        if eligible_for_card_updater:
+            etree.SubElement(data, 'eligible_for_card_updater').text = 'true'
+
+        return self.post("payment_methods", data=data)
+
     @_nested('payment_methods', 'payment_method')
     def get_payment_method_list(self, since_token=None):
         """ API Issue: Empty list """

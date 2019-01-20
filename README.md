@@ -4,13 +4,13 @@ This library provides a pure Python interface to the Spreedly REST APIs.
 The easiest way to install the latest version
 is by using pip/easy_install to pull it from Github:
 
-    $ pip install git+https://github.com/aplazame/spreedly-sdk
-    $ easy_install git+https://github.com/aplazame/spreedly-sdk
+    $ pip install git+https://github.com/yousifa/spreedly-sdk
+    $ easy_install git+https://github.com/yousifa/spreedly-sdk
 
 You may also use Git to clone the repository from
 Github and install it manually:
 
-    $ git clone https://github.com/aplazame/spreedly-sdk
+    $ git clone https://github.com/yousifa/spreedly-sdk
     $ python setup.py install
 
 ## Documentation
@@ -116,6 +116,30 @@ client.redact(gateway_token)
 ```
 
 ### Payments
+
+#### Payment Methods
+
+##### Tokenize Credit Card
+
+A credit card can be tokenized for future transactions.
+```python
+# Tokenize card info
+tokenized_card = client.tokenize_credit_card(
+    first_name="Homer",
+    last_name="Simpson",
+    number="5555555555554444",
+    verification_value="123",
+    month="01",
+    year="2022",
+    email="doh@homersimpson.com",
+    retained=True,
+    eligible_for_card_updater=False)
+
+# Get payment token if transaction is successful
+payment_method_token = ''
+if tokenized_card["transaction"]["succeeded"] is True:
+    payment_method_token = tokenized_card["transaction"]["payment_method"]["token"]
+```
 
 #### Purchase
 
